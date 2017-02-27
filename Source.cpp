@@ -79,7 +79,7 @@ void readTariffPlat(TariffPlan&tp)
 }
 
 
-void readArrayOfPlans(TariffPlan*plans, size_t size)
+void readArrayOfPlans(TariffPlan*plans,const size_t size)
 {
 	for (size_t i = 0; i < size; i++)
 	{
@@ -109,10 +109,10 @@ void printPlan(const TariffPlan&plan)
 
 
 
-void filterPlansByPreference(const TariffPlan*plans, size_t size)
+void filterPlansByPreference(const TariffPlan*plans,const size_t size)
 {
 	unsigned wantedMins = 0, wantedSMS = 0, wantedMB = 0, wantedTerm = 0;
-	double preferedPrice = 0;;
+	double preferedPrice = 0;
 	
 	std::cout << "Please enter how many minutes,SMSs and MBs you need at least: ";
 	
@@ -197,7 +197,7 @@ void swap(TariffPlan&tp1, TariffPlan&tp2)
 }
 
 
-void sortTarrifPlansByPrice(TariffPlan*plans, size_t size)
+void sortTarrifPlansByPrice(TariffPlan*plans,const size_t size)
 {
 
 	bool swapped = true;
@@ -225,7 +225,7 @@ void sortTarrifPlansByPrice(TariffPlan*plans, size_t size)
 }
 
 
-void printAllPlans(const TariffPlan*plans, size_t size)
+void printAllPlans(const TariffPlan*plans,const size_t size)
 {
 	for (size_t i = 0; i < size; i++)
 	{
