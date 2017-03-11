@@ -1,11 +1,12 @@
 #include <iostream>
-#include "Header.h"
+#include "Mentel.h"
 
 
 
 bool isValid(const Date&d)
 {
-	if ((d.day<1 || d.day>31) && (d.month > 1 || d.month > 12) && (d.year<2000 || d.year>2025))
+	if (d.day < 1 && (d.month <1 || d.month > 12) && (d.year<2000 || d.year>2025) &&
+	 (d.month == 2 && (d.day != 28 || d.day != 29)) && ((d.month==4 || d.month==6 || d.month==9|| d.month==11) && d.day!=30 ))
 		return false;
 	return true;
 }
@@ -15,12 +16,14 @@ void readDate(Date&d)
 {
 	do
 	{
+		char c;
+
 		std::cout << "Please enter a valid start/end date: ";
-		
-		std::cin >> d.day >> d.month >> d.year;
-		
+
+		std::cin >> d.day >> c>>d.month>>c >> d.year;
+
 		std::cout << '\n';
-	
+
 	} while (!isValid(d));
 }
 
@@ -36,45 +39,55 @@ void printDate(const Date&d)
 
 void readTariffPlat(TariffPlan&tp)
 {
-	std::cout << "Please enter:\n";
-		
-	std::cout<< "Name:";
+	do
+	{
+		std::cout << "Please enter:\n";
 
-	std::cin.sync();
+		std::cout << "Name:";
 
-	std::cin.clear();
-	
-	std::cin.getline(tp.name, MAX_NAMELEN, '\n');
+		std::cin.sync();
 
-	std::cout << '\n';
+		std::cin.clear();
 
-	std::cout << "Price: ";
+		std::cin.getline(tp.name, MAX_NAMELEN, '\n');
 
-	std::cin >> tp.price;
-	
-	std::cout << '\n' << "Minutes: ";
+		std::cout << '\n';
 
-	std::cin >> tp.min;
+		std::cout << "Price: ";
 
-	std::cout << '\n' << "Number of SMS: ";
+		std::cin >> tp.price;
 
-	std::cin >> tp.SMS;
+		std::cout << '\n' << "Minutes: ";
 
-	std::cout << '\n' << "Number of MB : ";
+		std::cin >> tp.min;
 
-	std::cin >> tp.MB;
+		std::cout << '\n' << "Number of SMS: ";
 
-	std::cout << '\n';
+		std::cin >> tp.SMS;
 
-	readDate(tp.startDate);
+		std::cout << '\n' << "Number of MB : ";
 
-	readDate(tp.endDate);
+		std::cin >> tp.MB;
 
-	std::cout << "Term of the contract: ";
+		std::cout << '\n';
 
-	std::cin >> tp.term;
+		readDate(tp.startDate);
 
-	std::cout << '\n';
+		readDate(tp.endDate);
+
+		std::cout << "Term of the contract: ";
+
+		std::cin >> tp.term;
+
+		std::cout << '\n';
+
+		if ((tp.endDate.year < tp.startDate.year) || (tp.startDate.year == tp.endDate.year && tp.endDate.month < tp.startDate.month) ||
+			(tp.startDate.year == tp.endDate.year && tp.startDate.month == tp.endDate.month && tp.endDate.day < tp.startDate.day))
+		{
+			std::cout << "The end date of the contract cannot be  before the start date of the contract!Please enter new dates! \n";
+		}
+	}  while ((tp.endDate.year  <  tp.startDate.year) || (tp.startDate.year == tp.endDate.year && tp.endDate.month  <  tp.startDate.month) ||
+	(tp.startDate.year==tp.endDate.year && tp.startDate.month==tp.endDate.month && tp.endDate.day<tp.startDate.day));
 
 }
 
@@ -97,9 +110,9 @@ void printPlan(const TariffPlan&plan)
 		<< "Included MBs: " << plan.MB << '\n'
 		<< "Term of the contract: " << plan.term
 		<< ' ' << "from ";
-	  
+
 	printDate(plan.startDate);
-	
+
 	std::cout << " to ";
 
 	printDate(plan.endDate);
@@ -108,92 +121,47 @@ void printPlan(const TariffPlan&plan)
 }
 
 
-
-void filterPlansByPreference(const TariffPlan*plans, size_t size)
+TariffPlan* filterPlansByPreference(const TariffPlan*plans, const size_t size, unsigned wantedMins,unsigned wantedSMS,unsigned wantedMB,unsigned wantedTerm ,
+double preferedPrice,size_t&newsize)
 {
-	unsigned wantedMins = 0, wantedSMS = 0, wantedMB = 0, wantedTerm = 0;
-	double preferedPrice = 0;;
-	
-	std::cout << "Please enter how many minutes,SMSs and MBs you need at least: ";
-	
-	std::cin >> wantedMins >> wantedSMS >> wantedMB;
-
-	std::cout << '\n';
-
-	std::cout << "Please enter how long term do you prefer: ";
-
-	std::cin >> wantedTerm;
-
-	std::cout <<'\n'<< "Please enter the max price that satisfies you: ";
-
-	std::cin >> preferedPrice;
-	
-
-	std::cout << '\n' << "The tariff plans which satisfies your preferences are: \n";
-
-	int cnt = 0;
 
 	for (size_t i = 0; i < size; i++)
 	{
-		
-		if (plans[i].min >= wantedMins && plans[i].SMS >= wantedSMS && 
-			plans[i].MB >= wantedMB && plans[i].term >= wantedTerm && plans[i].price<=preferedPrice)
-		
+		if (!(plans[i].min >= wantedMins && plans[i].SMS >= wantedSMS &&
+			plans[i].MB >= wantedMB && plans[i].term >= wantedTerm && plans[i].price <= preferedPrice))
+
 		{
-			cnt++;
-			printPlan(plans[i]);
+			newsize++;
 		}
-		if (cnt == 0)
-		{
-			std::cout << "There are no plans that satisfies your preferences!\n";
-		}
-	
 	}
 
-}
-
-void copyDate(Date&d1, const Date&d2)
-{
+	TariffPlan*Filtered = new TariffPlan[newsize];
 	
-		d1.day = d2.day;
-
-		d1.month = d2.month;
-
-		d1.year = d2.year;
-}
-
-void copyPlan(TariffPlan&tp1,const TariffPlan&tp2)
-{
-	if (&tp1 != &tp2)
+	size_t j = 0;
+	
+	for (size_t i = 0; i < size; i++)
 	{
+		if (!(plans[i].min >= wantedMins && plans[i].SMS >= wantedSMS &&
+			plans[i].MB >= wantedMB && plans[i].term >= wantedTerm && plans[i].price <= preferedPrice))
 
-		strcpy(tp1.name, tp2.name);
-
-		tp1.price = tp2.price;
-
-		tp1.min = tp2.min;
-
-		tp1.SMS = tp2.SMS;
-
-		tp1.MB = tp2.MB;
-
-		copyDate(tp1.startDate, tp2.startDate);
-
-		copyDate(tp1.endDate, tp2.endDate);
+		{
+			Filtered[j] = plans[i];
+			j++;
+		}
 	}
+	return Filtered;
 }
+
+
 
 
 void swap(TariffPlan&tp1, TariffPlan&tp2)
 {
 	TariffPlan temp;
 
-	copyPlan(temp, tp1);
-
-	copyPlan(tp1, tp2);
-
-	copyPlan(tp2, temp);
-
+	temp = tp1;
+	tp1 = tp2;
+	tp2 = temp;
 }
 
 
@@ -207,7 +175,7 @@ void sortTarrifPlansByPrice(TariffPlan*plans, size_t size)
 	while (swapped)
 	{
 		swapped = false;
-		
+
 		j++;
 
 		for (size_t i = 0; i < size - j; i++)
@@ -215,12 +183,12 @@ void sortTarrifPlansByPrice(TariffPlan*plans, size_t size)
 			if (plans[i].price>plans[i + 1].price)
 			{
 				swap(plans[i], plans[i + 1]);
-					
-					swapped = true;
+
+				swapped = true;
 			}
 		}
 	}
-	
+
 
 }
 
