@@ -3,10 +3,12 @@
 
 
 
+bool isStartDateBeforeEndDate(const Date&SD, const Date&ED);
+
 bool isValid(const Date&d)
 {
 	if (d.day < 1 && (d.month <1 || d.month > 12) && (d.year<2000 || d.year>2025) &&
-	 (d.month == 2 && (d.day != 28 || d.day != 29)) && ((d.month==4 || d.month==6 || d.month==9|| d.month==11) && d.day!=30 ))
+	 (d.month == 2 && (d.day>29)) && ((d.month==4 || d.month==6 || d.month==9|| d.month==11) && d.day==31 ))
 		return false;
 	return true;
 }
@@ -81,8 +83,7 @@ void readTariffPlat(TariffPlan&tp)
 
 		std::cout << '\n';
 
-		if ((tp.endDate.year < tp.startDate.year) || (tp.startDate.year == tp.endDate.year && tp.endDate.month < tp.startDate.month) ||
-			(tp.startDate.year == tp.endDate.year && tp.startDate.month == tp.endDate.month && tp.endDate.day < tp.startDate.day))
+		if (isStartDateBeforeEndDate(tp.startDate,tp.endDate))
 		{
 			std::cout << "The end date of the contract cannot be  before the start date of the contract!Please enter new dates! \n";
 		}
@@ -121,21 +122,21 @@ void printPlan(const TariffPlan&plan)
 }
 
 
-TariffPlan* filterPlansByPreference(const TariffPlan*plans, const size_t size, unsigned wantedMins,unsigned wantedSMS,unsigned wantedMB,unsigned wantedTerm ,
-double preferedPrice,size_t&newsize)
+TariffPlan* filterPlansByPreference(const TariffPlan*plans, size_t& size, unsigned wantedMins,unsigned wantedSMS,unsigned wantedMB,unsigned wantedTerm ,
+double preferedPrice)
 {
-
+	size_t cnt = 0;
 	for (size_t i = 0; i < size; i++)
 	{
 		if (!(plans[i].min >= wantedMins && plans[i].SMS >= wantedSMS &&
 			plans[i].MB >= wantedMB && plans[i].term >= wantedTerm && plans[i].price <= preferedPrice))
 
 		{
-			newsize++;
+			cnt++;
 		}
 	}
 
-	TariffPlan*Filtered = new TariffPlan[newsize];
+	TariffPlan*Filtered = new TariffPlan[cnt];
 	
 	size_t j = 0;
 	
@@ -149,6 +150,7 @@ double preferedPrice,size_t&newsize)
 			j++;
 		}
 	}
+	size = cnt;
 	return Filtered;
 }
 
@@ -200,3 +202,13 @@ void printAllPlans(const TariffPlan*plans, size_t size)
 		printPlan(plans[i]);
 	}
 }
+
+
+
+bool isStartDateBeforeEndDate(const Date&SD, const Date&ED)
+{
+	if (SD.year>ED.year) 
+		return false;
+	return true;
+}
+
