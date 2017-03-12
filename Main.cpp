@@ -4,7 +4,7 @@
 
 int main()
 {
-	int n;
+	size_t n;
 	unsigned wantedMins, wantedSMS, wantedMB, wantedTerm;
 	double preferedPrice;
 
@@ -35,9 +35,7 @@ int main()
 
 	std::cin >> preferedPrice;
 
-	size_t newsize = 0;
-
-    TariffPlan*filteredPlans=filterPlansByPreference(plans,n, wantedMins, wantedSMS, wantedMB, wantedTerm, preferedPrice,newsize);
+    TariffPlan*filteredPlans=filterPlansByPreference(plans,n, wantedMins, wantedSMS, wantedMB, wantedTerm, preferedPrice);
 
 	sortTarrifPlansByPrice(filteredPlans, n);
 
@@ -47,7 +45,7 @@ int main()
 
 	std::cout << '\n';
 
-	printAllPlans(filteredPlans, newsize);
+	printAllPlans(filteredPlans, n);
 
 
 
