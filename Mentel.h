@@ -40,11 +40,9 @@ void readTariffPlat(TariffPlan&tp);
 
 void readArrayOfPlans(TariffPlan*plans, size_t size);
 
-TariffPlan* filterPlansByPreference(const TariffPlan*plans, const size_t size, unsigned wantedMins, unsigned wantedSMS, unsigned wantedMB, unsigned wantedTerm, double preferedPrice,size_t&newsize);
+TariffPlan* filterPlansByPreference(const TariffPlan*plans,  size_t& size, unsigned wantedMins, unsigned wantedSMS, unsigned wantedMB, unsigned wantedTerm, double preferedPrice);
 
 void printPlan(const TariffPlan&plan);
-
-void swap(TariffPlan&tp1, TariffPlan&tp2);
 
 void sortTarrifPlansByPrice(TariffPlan*plans, size_t size);
 
